@@ -1,16 +1,24 @@
-# whitewhale_ascii_bot.py
-import logging
+# main.py - WhiteWhale ASCII Webhook Bot for Render
+import os
+from flask import Flask, request, abort
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import asyncio
+import logging
 
-# Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Bot token from @BotFather
-BOT_TOKEN = "8487247811:AAH7zkP3p8cKyc2W45bzSfQpSkGQffP6HMc"
+app = Flask(__name__)
 
-# The ASCII art template of the White Whale holding a sign
+# Get from environment variables (set these in Render dashboard)
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # e.g., https://your-app.onrender.com
+
+# Secret token to validate Telegram requests (optional but recommended)
+SECRET_TOKEN = os.getenv("SECRET_TOKEN", "super-secret-token-change-this")
+
+# The ASCII whale template
 WHALE_ASCII = """
                ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
             ▓▓▓▓▓▓████████████▓▓▓▓▓
@@ -47,51 +55,71 @@ WHALE_ASCII = """
             /        \\_______/
 """
 
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🌊 Welcome to the White Whale ASCII Generator! 🐋\n\n"
-        "Send: /whale YOUR MESSAGE\n"
-        "Example: /whale LFG\n\n"
-        "The mighty White Whale will hold your sign!"
+        "🌊 Welcome aboard, captain! 🐋\n\n"
+        "Send /whale YOUR MESSAGE\n"
+        "Or just type a short message (up to 20 chars) and the White Whale will hold your sign!\n\n"
+        "Example: /whale LFG"
     )
-
 
 async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("Please add a message!\nExample: /whale TO THE MOON")
+        await update.message.reply_text("Add a message! Example: /whale TO THE MOON")
         return
 
     user_text = " ".join(context.args).upper()
-
-    # Limit length to avoid breaking the art
-    if len(user_text) > 20:
-        user_text = user_text[:17] + "..."
-
-    # Replace {text} in the ASCII art
-    ascii_art = WHALE_ASCII.replace("{text}", user_text.center(15))
-
-    await update.message.reply_text(f"```ascii\n{ascii_art}\n```", parse_mode='Markdown')
-
+    await send_whale(update, user_text)
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip().upper()
-    if len(text) <= 20 and text:  # Auto-detect short messages as potential signs
-        ascii_art = WHALE_ASCII.replace("{text}", text.center(15))
-        await update.message.reply_text(f"🐋 The White Whale heard your call!\n\n```ascii\n{ascii_art}\n```",
-                                        parse_mode='Markdown')
+    if len(text) <= 20 and text:
+        await send_whale(update, text)
 
+async def send_whale(update: Update, user_text: str):
+    if len(user_text) > 20:
+        user_text = user_text[:17] + "..."
 
-def main():
-    app = Application.builder().token(BOT_TOKEN).build()
+    ascii_art = WHALE_ASCII.replace("{text}", user_text.center(15))
+    await update.message.reply_text(
+        f"🐋 The White Whale carries your message!\n\n```ascii\n{ascii_art}\n```",
+        parse_mode='Markdown'
+    )
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("whale", whale_command))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+# Flask route for Telegram webhook
+@app.route(f'/{BOT_TOKEN}', methods=['POST'])
+def webhook():
+    if request.headers.get('X-Telegram-Bot-Api-Secret-Token') != SECRET_TOKEN:
+        abort(403)
 
-    print("White Whale ASCII Bot is running... 🐋")
-    app.run_polling()
+    json_data = request.get_json(force=True)
+    update = Update.de_json(json_data, application.bot)
+    asyncio.run(application.process_update(update))
+    return 'OK', 200
 
+@app.route('/')
+def index():
+    return "White Whale ASCII Bot is swimming strong! 🐋"
+
+# Global application
+application = None
+
+@app.before_first_request
+def setup_bot():
+    global application
+    loop = asyncio.get_event_loop()
+    
+    application = Application.builder().token(BOT_TOKEN).build()
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("whale", whale_command))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+
+    # Set webhook
+    loop.run_until_complete(application.bot.set_webhook(url=f"{WEBHOOK_URL}/{BOT_TOKEN}"))
+    logger.info(f"Webhook set to {WEBHOOK_URL}/{BOT_TOKEN}")
 
 if __name__ == '__main__':
-    main()
+    # For local testing
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
