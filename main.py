@@ -1,5 +1,4 @@
 # main.py - WhiteWhale ASCII Webhook Bot for Render
-import os
 from flask import Flask, request, abort
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
@@ -12,11 +11,11 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Get from environment variables (set these in Render dashboard)
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # e.g., https://your-app.onrender.com
+BOT_TOKEN = "8487247811:AAH7zkP3p8cKyc2W45bzSfQpSkGQffP6HMc"
+WEBHOOK_URL = "https://whitewhalememe.onrender.com"  # https://your-app.onrender.com
 
 # Secret token to validate Telegram requests (optional but recommended)
-SECRET_TOKEN = os.getenv("SECRET_TOKEN", "super-secret-token-change-this")
+# SECRET_TOKEN = os.getenv("SECRET_TOKEN", "super-secret-token-change-this")
 
 # The ASCII whale template
 WHALE_ASCII = """
@@ -123,3 +122,4 @@ if __name__ == '__main__':
     # For local testing
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
