@@ -1,25 +1,25 @@
-# main.py - Updated WhiteWhale ASCII Webhook Bot (Flask 3.x compatible)
+# main.py - WhiteWhale ASCII Webhook Bot (Render-compatible, PTB v22+)
 import os
-import asyncio
 import logging
 from flask import Flask, request, abort
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import asyncio
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Environment variables (set in Render dashboard)
+# Environment variables - set these in Render dashboard
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # e.g., https://your-service.onrender.com
-SECRET_TOKEN = os.getenv("SECRET_TOKEN", "super-secret-change-this")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # e.g. https://your-service.onrender.com
+SECRET_TOKEN = os.getenv("SECRET_TOKEN", "change-this-to-something-strong")
 
 if not BOT_TOKEN or not WEBHOOK_URL:
-    raise ValueError("BOT_TOKEN and WEBHOOK_URL must be set in environment variables!")
+    raise ValueError("BOT_TOKEN and WEBHOOK_URL must be set!")
 
-# The ASCII whale template (customize as you like!)
+# ASCII Whale template
 WHALE_ASCII = """
                ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
             ▓▓▓▓▓▓████████████▓▓▓▓▓
@@ -85,32 +85,35 @@ async def send_whale(update: Update, user_text: str):
         parse_mode='Markdown'
     )
 
-# Create the Application and add handlers
+# Create PTB Application
 application = Application.builder().token(BOT_TOKEN).build()
 
+# Add handlers
 application.add_handler(CommandHandler("start", start))
 application.add_handler(CommandHandler("whale", whale_command))
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
-# Set webhook once at startup (runs async in background)
-async def set_webhook():
+# Set webhook on first request (runs in the request's async context)
+async def ensure_webhook():
     webhook_path = f"/{BOT_TOKEN}"
     full_url = f"{WEBHOOK_URL}{webhook_path}"
+    info = await application.bot.get_webhook_info()
     if info.url != full_url:
         await application.bot.set_webhook(url=full_url, secret_token=SECRET_TOKEN)
         logger.info(f"Webhook set to {full_url}")
     else:
         logger.info("Webhook already set correctly")
-# Run webhook setup in background
-# asyncio.create_task(set_webhook())
 
-# Flask webhook endpoint
 @app.route(f'/{BOT_TOKEN}', methods=['POST'])
-def webhook():
+async def webhook():
+    # Security check
     if request.headers.get('X-Telegram-Bot-Api-Secret-Token') != SECRET_TOKEN:
         abort(403)
-    await set_webhook()
-    
+
+    # Ensure webhook is set (first request or if changed)
+    await ensure_webhook()
+
+    # Process update
     json_data = request.get_json(force=True)
     update = Update.de_json(json_data, application.bot)
     await application.process_update(update)
@@ -122,4 +125,3 @@ def index():
 
 if __name__ == '__main__':
     app.run()
-
