@@ -3,33 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>White Whale ASCII Generator 🐋</title>
+    <title>White Whale Meme Generator 🐋</title>
     <style>
-        body { font-family: monospace; background: #000; color: #0f0; text-align: center; padding: 20px; }
+        body { font-family: Arial, sans-serif; background: #000; color: #0f0; text-align: center; padding: 20px; }
         h1 { color: #00ff00; }
-        pre { background: #111; padding: 20px; border: 2px solid #0f0; display: inline-block; margin: 20px 0; }
-        input[type="text"] { width: 300px; padding: 10px; font-size: 18px; }
-        button { padding: 10px 20px; font-size: 18px; background: #0f0; color: #000; border: none; cursor: pointer; }
+        input { width: 80%; max-width: 400px; padding: 10px; margin: 10px; font-size: 18px; background: #111; color: #0f0; border: 2px solid #0f0; }
+        button { padding: 12px 24px; font-size: 18px; background: #0f0; color: #000; border: none; cursor: pointer; }
         button:hover { background: #00ff00; }
+        .meme { margin: 30px auto; max-width: 500px; }
+        img { max-width: 100%; height: auto; border: 3px solid #0f0; }
         footer { margin-top: 50px; color: #666; }
     </style>
 </head>
 <body>
-    <h1>🐋 White Whale ASCII Generator 🐋</h1>
-    <p>Enter your message (max ~20 chars) and watch the White Whale carry it!</p>
+    <h1>🐋 White Whale Meme Generator 🐋</h1>
+    <p>Enter top and/or bottom text — classic impact font, perfect for $WHITEWHALE memes!</p>
 
     <form method="post">
-        <input type="text" name="text" placeholder="e.g. LFG" value="{{ user_text }}" required autofocus>
-        <button type="submit">Generate Whale</button>
+        <input type="text" name="top_text" placeholder="TOP TEXT (optional)" value="{{ top_text }}">
+        <br>
+        <input type="text" name="bottom_text" placeholder="BOTTOM TEXT (optional)" value="{{ bottom_text }}">
+        <br><br>
+        <button type="submit">Generate Meme</button>
     </form>
 
-    {% if ascii_art %}
-        <h2>Your White Whale:</h2>
-        <pre>{{ ascii_art }}</pre>
-        <p>Copy & paste this anywhere! Share with the @WhiteWhaleMeme pod 🚀</p>
+    {% if meme_url %}
+        <div class="meme">
+            <h2>Your Meme Is Ready!</h2>
+            <img src="{{ meme_url }}" alt="White Whale Meme">
+            <p>Right-click → Save image or copy link to share!</p>
+            <p>Post it on X with #WhiteWhaleMeme 🐋🚀</p>
+        </div>
     {% endif %}
 
-    <footer>Made for the $WHITEWHALE community 🌊 LFG</footer>
+    <footer>Made for the @WhiteWhaleMeme pod • LFG 🌊</footer>
 </body>
 </html>
-
