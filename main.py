@@ -1,22 +1,20 @@
-# main.py - Updated for reliable template path on Render
+# main.py - White Whale ASCII Generator (Robust path fix for Render)
 import os
-from pathlib import Path
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-# Absolute path to templates folder
-BASE_DIR = Path(__file__).resolve().parent
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+# Robust templates directory - works on Render, local, everywhere
+templates = Jinja2Templates(directory="templates")
 
 app = FastAPI(title="White Whale ASCII Generator 🐋")
 
-# Your epic White Whale ASCII template
+# Epic White Whale ASCII
 WHALE_ASCII = """
                ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
             ▓▓▓▓▓▓████████████▓▓▓▓▓
           ▓▓▓▓████████████████████▓▓▓
-        ▓▓██████████████████████████▓▓
+        ▓▓▓██████████████████████████▓▓
        ▓██████████████████████████████▓
       ▓████████████████████████████████▓
      ▓██████████████████████████████████▓
