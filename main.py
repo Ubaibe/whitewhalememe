@@ -1,42 +1,42 @@
-# main.py - White Whale ASCII Generator (Robust path fix for Render)
-import os
+# main.py - White Whale Meme Generator
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+import textwrap
 
-# Robust templates directory - works on Render, local, everywhere
+app = FastAPI(title="White Whale Meme Generator 🐋")
+
 templates = Jinja2Templates(directory="templates")
 
-app = FastAPI(title="White Whale ASCII Generator 🐋")
-
-# Epic White Whale ASCII
-WHALE_ASCII = WHALE_ASCII = """
-       __
-     .'  '.
- ___/      \___
-/              \
-|   WHITEWHALE  |
-\              /
- '._        _.'
-    ''----''
-"""
+# ⚠️ REPLACE WITH YOUR OFFICIAL WHITE WHALE IMAGE URL
+WHALE_IMAGE_URL = "https://i.imgur.com/YOUR_WHITE_WHALE_IMAGE_HERE.png"  # Put your direct link
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "ascii_art": None, "user_text": ""})
-
-@app.post("/", response_class=HTMLResponse)
-async def generate(request: Request, text: str = Form(...)):
-    user_text = text.strip().upper()
-    if len(user_text) > 20:
-        user_text = user_text[:17] + "..."
-    
-    ascii_art = WHALE_ASCII.replace("{text}", user_text.center(15))
-    
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "ascii_art": ascii_art,
-        "user_text": text
+        "meme_url": None,
+        "top_text": "",
+        "bottom_text": ""
     })
 
+@app.post("/", response_class=HTMLResponse)
+async def generate_meme(
+    request: Request,
+    top_text: str = Form(""),
+    bottom_text: str = Form("")
+):
+    top = top_text.strip().upper()
+    bottom = bottom_text.strip().upper()
 
+    # Build the meme URL using QuickMeme-style generator (free, reliable, supports custom image)
+    # Alternative services: imgflip, memegen.link — this one is simple & fast
+    base = "https://api.memegen.link/images/custom"
+    url = f"{base}/{top}/{bottom}.png?background={WHALE_IMAGE_URL}"
+
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "meme_url": url,
+        "top_text": top_text,
+        "bottom_text": bottom_text
+    })
