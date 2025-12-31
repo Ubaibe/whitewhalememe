@@ -1,22 +1,22 @@
-# main.py - White Whale ASCII Art Generator Website
+# main.py - Updated for reliable template path on Render
+import os
+from pathlib import Path
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+# Absolute path to templates folder
+BASE_DIR = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+
 app = FastAPI(title="White Whale ASCII Generator 🐋")
-
-# Optional: mount static for future CSS/images
-# app.mount("/static", StaticFiles(directory="static"), name="static")
-
-templates = Jinja2Templates(directory="templates")
 
 # Your epic White Whale ASCII template
 WHALE_ASCII = """
                ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
             ▓▓▓▓▓▓████████████▓▓▓▓▓
           ▓▓▓▓████████████████████▓▓▓
-        ▓▓▓██████████████████████████▓▓
+        ▓▓██████████████████████████▓▓
        ▓██████████████████████████████▓
       ▓████████████████████████████████▓
      ▓██████████████████████████████████▓
@@ -50,7 +50,7 @@ WHALE_ASCII = """
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.get_template("index.html").render({"request": request, "ascii_art": None, "user_text": ""})
+    return templates.TemplateResponse("index.html", {"request": request, "ascii_art": None, "user_text": ""})
 
 @app.post("/", response_class=HTMLResponse)
 async def generate(request: Request, text: str = Form(...)):
@@ -60,8 +60,8 @@ async def generate(request: Request, text: str = Form(...)):
     
     ascii_art = WHALE_ASCII.replace("{text}", user_text.center(15))
     
-    return templates.get_template("index.html").render({
+    return templates.TemplateResponse("index.html", {
         "request": request,
         "ascii_art": ascii_art,
-        "user_text": text  # Preserve input
+        "user_text": text
     })
