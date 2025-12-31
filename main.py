@@ -11,20 +11,14 @@ app = FastAPI(title="White Whale ASCII Generator 🐋")
 
 # Epic White Whale ASCII
 WHALE_ASCII = WHALE_ASCII = """
-          ___I_I___
-         /         \
-        |  _     _  |
-        | | \\___/ | |
-      __| \\_______/ |__
-     /   \\_________/   \\
-    /                     \\
-   /    {text}    \\
-  /                         \\
- /                           \\
-/_____________________________\\
-   | |                   | |
-   |_|                   |_|
-
+       __
+     .'  '.
+ ___/      \___
+/              \
+|   WHITEWHALE  |
+\              /
+ '._        _.'
+    ''----''
 """
 
 @app.get("/", response_class=HTMLResponse)
@@ -44,4 +38,5 @@ async def generate(request: Request, text: str = Form(...)):
         "ascii_art": ascii_art,
         "user_text": text
     })
+
 
