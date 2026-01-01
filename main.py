@@ -24,10 +24,11 @@ WHALE_TEMPLATES = {
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
+    default_template = list(WHALE_TEMPLATES.keys())[0]
     return templates.TemplateResponse("index.html", {
         "request": request,
         "templates": WHALE_TEMPLATES,
-        "selected_template": list(WHALE_TEMPLATES.keys())[0],
+        "selected_template":default_template,
         "meme_url": None,
         "top_text": "",
         "bottom_text": ""
@@ -54,5 +55,6 @@ async def generate_meme(
         "top_text": top_text,
         "bottom_text": bottom_text
     })
+
 
 
