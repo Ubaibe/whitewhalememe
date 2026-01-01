@@ -22,7 +22,7 @@
     <form method="post">
         <select name="template" required>
             {% for name in templates.keys() %}
-                <option value="{{ name }}" {% if name == selected_template %}selected{% endif %}>{{ name }}</option>
+            <option value="{{ name }}" {% if loop.first or name == selected_template %}selected{% endif %}>{{ name }}</option>
             {% endfor %}
         </select>
         <br>
@@ -45,4 +45,5 @@
     <footer>Made for the pod • More templates coming • LFG 🌊</footer>
 </body>
 </html>
+
 
