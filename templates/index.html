@@ -20,7 +20,7 @@
     <p>Choose a template, add text, and create epic $WHITEWHALE memes!</p>
 
     <form method="post">
-        <select name="template">
+        <select name="template" required>
             {% for name in templates.keys() %}
                 <option value="{{ name }}" {% if name == selected_template %}selected{% endif %}>{{ name }}</option>
             {% endfor %}
@@ -45,3 +45,4 @@
     <footer>Made for the pod • More templates coming • LFG 🌊</footer>
 </body>
 </html>
+
