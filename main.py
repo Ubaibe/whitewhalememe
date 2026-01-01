@@ -41,7 +41,10 @@ async def generate_meme(
     top_text: str = Form(""),
     bottom_text: str = Form("")
 ):
-    background_url = WHALE_TEMPLATES.get(template, list(WHALE_TEMPLATES.values())[0])
+    if template not in WHALE_TEMPLATES:
+        template = list(WHALE_TEMPLATES.keys())[0]
+        
+    background_url = WHALE_TEMPLATES[template]
     top = top_text.strip().upper()
     bottom = bottom_text.strip().upper()
 
@@ -55,6 +58,3 @@ async def generate_meme(
         "top_text": top_text,
         "bottom_text": bottom_text
     })
-
-
-
