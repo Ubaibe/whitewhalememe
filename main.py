@@ -9,7 +9,7 @@ app = FastAPI(title="White Whale Meme Generator 🐋")
 templates = Jinja2Templates(directory="templates")
 
 # ⚠️ REPLACE WITH YOUR OFFICIAL WHITE WHALE IMAGE URL
-WHALE_IMAGE_URL = "https://ibb.co/k29wdkkv"
+WHALE_IMAGE_URL = "https://pbs.twimg.com/media/G9cuPMyWgAABykF.jpg"
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {
@@ -39,5 +39,6 @@ async def generate_meme(
         "top_text": top_text,
         "bottom_text": bottom_text
     })
+
 
 
