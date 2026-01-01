@@ -7,19 +7,25 @@
     <style>
         body { font-family: Arial, sans-serif; background: #000; color: #0f0; text-align: center; padding: 20px; }
         h1 { color: #00ff00; }
-        input { width: 80%; max-width: 400px; padding: 10px; margin: 10px; font-size: 18px; background: #111; color: #0f0; border: 2px solid #0f0; }
+        select, input { width: 80%; max-width: 400px; padding: 10px; margin: 10px; font-size: 18px; background: #111; color: #0f0; border: 2px solid #0f0; }
         button { padding: 12px 24px; font-size: 18px; background: #0f0; color: #000; border: none; cursor: pointer; }
         button:hover { background: #00ff00; }
-        .meme { margin: 30px auto; max-width: 500px; }
-        img { max-width: 100%; height: auto; border: 3px solid #0f0; }
+        .meme { margin: 30px auto; max-width: 600px; }
+        img { max-width: 100%; height: auto; border: 3px solid #0f0; border-radius: 10px; }
         footer { margin-top: 50px; color: #666; }
     </style>
 </head>
 <body>
     <h1>🐋 White Whale Meme Generator 🐋</h1>
-    <p>Enter top and/or bottom text — classic impact font, perfect for $WHITEWHALE memes!</p>
+    <p>Choose a template, add text, and create epic $WHITEWHALE memes!</p>
 
     <form method="post">
+        <select name="template">
+            {% for name in templates.keys() %}
+                <option value="{{ name }}" {% if name == selected_template %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+        <br>
         <input type="text" name="top_text" placeholder="TOP TEXT (optional)" value="{{ top_text }}">
         <br>
         <input type="text" name="bottom_text" placeholder="BOTTOM TEXT (optional)" value="{{ bottom_text }}">
@@ -31,11 +37,11 @@
         <div class="meme">
             <h2>Your Meme Is Ready!</h2>
             <img src="{{ meme_url }}" alt="White Whale Meme">
-            <p>Right-click → Save image or copy link to share!</p>
-            <p>Post it on X with #WhiteWhaleMeme 🐋🚀</p>
+            <p>Right-click → Save or share the link!</p>
+            <p>Tag @WhiteWhaleMeme on X 🐋🚀</p>
         </div>
     {% endif %}
 
-    <footer>Made for the @WhiteWhaleMeme pod • LFG 🌊</footer>
+    <footer>Made for the pod • More templates coming • LFG 🌊</footer>
 </body>
 </html>
