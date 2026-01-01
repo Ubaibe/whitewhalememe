@@ -1,19 +1,29 @@
-# main.py - White Whale Meme Generator
+# main.py - White Whale Meme Generator with Multiple Templates
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-import textwrap
 
 app = FastAPI(title="White Whale Meme Generator 🐋")
 
 templates = Jinja2Templates(directory="templates")
 
-# ⚠️ REPLACE WITH YOUR OFFICIAL WHITE WHALE IMAGE URL
-WHALE_IMAGE_URL = "https://pbs.twimg.com/media/G9OOx9jW8AAgN_O.jpg"
+# Add as many White Whale images as you want! (direct links)
+WHALE_TEMPLATES = {
+    "Armored Warrior": "https://pbs.twimg.com/media/G9OOx9jW8AAgN_O.jpg",  # Example official
+    "Epic Charge": "https://pbs.twimg.com/media/G9dHoXxWwAU_qKU.jpg",
+    "Built Different": "https://pbs.twimg.com/media/G9cuPMyWgAABykF.jpg",
+    "Cheers Whale": "https://pbs.twimg.com/media/G9jSVCUWYAAwJWC.jpg",
+    # Add your own uploaded ones here:
+    "Custom Pose 1": "https://i.ibb.co/your-link-here/image.png",
+    "Custom Pose 2": "https://i.ibb.co/another-link/image.png",
+}
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {
         "request": request,
+        "templates": WHALE_TEMPLATES,
+        "selected_template": list(WHALE_TEMPLATES.keys())[0],
         "meme_url": None,
         "top_text": "",
         "bottom_text": ""
@@ -22,24 +32,21 @@ async def home(request: Request):
 @app.post("/", response_class=HTMLResponse)
 async def generate_meme(
     request: Request,
+    template: str = Form(...),
     top_text: str = Form(""),
     bottom_text: str = Form("")
 ):
+    background_url = WHALE_TEMPLATES.get(template, list(WHALE_TEMPLATES.values())[0])
     top = top_text.strip().upper()
     bottom = bottom_text.strip().upper()
 
-    # Build the meme URL using QuickMeme-style generator (free, reliable, supports custom image)
-    # Alternative services: imgflip, memegen.link — this one is simple & fast
-    base = "https://api.memegen.link/images/custom"
-    url = f"{base}/{top}/{bottom}.png?background={WHALE_IMAGE_URL}"
+    meme_url = f"https://api.memegen.link/images/custom/{top}/{bottom}.png?background={background_url}"
 
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "meme_url": url,
+        "templates": WHALE_TEMPLATES,
+        "selected_template": template,
+        "meme_url": meme_url,
         "top_text": top_text,
         "bottom_text": bottom_text
     })
-
-
-
-
