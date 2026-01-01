@@ -17,9 +17,9 @@ WHALE_TEMPLATES = {
     "Custom Pose 1": "https://i.ibb.co/TMk1RNBc/image.png",
     "Custom Pose 2": "https://pbs.twimg.com/media/G9jSVCUWYAAwJWC.jpg",
     "Custom Pose 3": "https://pbs.twimg.com/media/G9b1RknWAAA1iyD.jpg",
-    "Custom Pose 4: "https://pbs.twimg.com/media/G9bbp3BWwAIiBwM.jpg",
-    "Custom Pose 5: "https://pbs.twimg.com/media/G9Xuf5uXgAAWfSW.jpg",
-    "Custom Pose 6: "https://pbs.twimg.com/media/G9WjI4IXkAEr9U0.jpg",
+    "Custom Pose 4": "https://pbs.twimg.com/media/G9bbp3BWwAIiBwM.jpg",
+    "Custom Pose 5": "https://pbs.twimg.com/media/G9Xuf5uXgAAWfSW.jpg",
+    "Custom Pose 6": "https://pbs.twimg.com/media/G9WjI4IXkAEr9U0.jpg",
 }
 
 @app.get("/", response_class=HTMLResponse)
@@ -54,4 +54,5 @@ async def generate_meme(
         "top_text": top_text,
         "bottom_text": bottom_text
     })
+
 
